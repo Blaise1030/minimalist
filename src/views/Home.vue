@@ -11,29 +11,14 @@
       type="text"
       v-model="state.newTask"
       @keyup.enter="onSubmit"
-      placeholder="✏️ New task"
+      placeholder="new task"
     />
     <div class="list">
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
-      <ListItem />
+      <ListItem
+        v-for="(item, index) in state.message"
+        v-bind:key="index"
+        :item="item"
+      />
     </div>
   </div>
 </template>
@@ -45,9 +30,17 @@ export default defineComponent({
   components: { ListItem },
   name: "Home",
   setup() {
-    const state = reactive<{ newTask: string; showBottomBar: boolean }>({
+    const state = reactive<{
+      newTask: string;
+      showBottomBar: boolean;
+      message: string[];
+    }>({
       newTask: "",
       showBottomBar: false,
+      message: [
+        "Message Message Message Message Message Message Message Message Message Message Message Message",
+        "Message",
+      ],
     });
 
     onMounted(() => {

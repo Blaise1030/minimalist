@@ -13,8 +13,8 @@ export default defineComponent({
     color: String,
     onClick: Function,
   },
-  setup(props) {
-    return { props };
+  setup() {
+    return {};
   },
 });
 </script>
