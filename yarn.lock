@@ -8848,6 +8848,11 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
 
+vue3-circle-progress@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/vue3-circle-progress/-/vue3-circle-progress-1.0.6.tgz#84f4ecf624cc912ffe334575402364f0125e7745"
+  integrity sha512-vvCuZqCnf7KGsIIro8TObF6R5g/RsK6qKMZAFUjTH3geLMrUxmTRKD1hcoUhqWeoYj+q64f6BIRT4VqkYK4wgQ==
+
 vue@^3.0.0:
   version "3.2.1"
   resolved "https://registry.nlark.com/vue/download/vue-3.2.1.tgz#30dde152f2fdad0669ea9854d5a90a00ef96974b"

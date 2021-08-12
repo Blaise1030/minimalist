@@ -22,7 +22,7 @@ export default defineComponent({
   border: none;
   outline: none;
   margin: 1rem 0;
-  padding: 0.9rem 1.5rem;
+  padding: 0.8rem 1.2rem;
   border-radius: 0.2rem;
   cursor: pointer;
   background-color: black;

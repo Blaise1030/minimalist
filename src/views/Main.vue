@@ -42,7 +42,7 @@ export default defineComponent({
 }
 
 .center {
-  width: fit-content;
+  width: 40%;
   text-align: start;
 }
 
@@ -52,7 +52,10 @@ export default defineComponent({
   margin: 0;
 }
 
-.input-box::placeholder {
-  color: rgba(0, 0, 0, 0.616);
+@media (max-width: 428px) {
+  .center {
+    width: 90%;
+    text-align: start;
+  }
 }
 </style>

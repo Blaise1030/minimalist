@@ -1,9 +1,11 @@
 <template>
-  <div class="wrapper">
-    <div class="leading" v-if="state.isHover && ISMOBILE">
-      <IconButton icon="arrow_upward" />
-      <IconButton icon="arrow_downward" />
-    </div>
+  <div class="wrapper" @mouseleave="state.isHover = false">
+    <span class="material-icons" v-if="!state.checked" :onClick="checkTask"
+      >check_box_outline_blank</span
+    >
+    <span class="material-icons" v-if="state.checked" :onClick="checkTask"
+      >check_box</span
+    >
     <p
       class="message"
       v-bind:class="{ checked: state.checked, includePadding: state.isHover }"
@@ -13,10 +15,6 @@
     </p>
 
     <div class="trailing" v-if="state.isHover">
-      <IconButton v-if="!ISMOBILE" icon="arrow_upward" />
-      <IconButton v-if="!ISMOBILE" icon="arrow_downward" />
-      <IconButton v-if="state.checked" icon="clear" :onClick="checkTask" />
-      <IconButton v-if="!state.checked" icon="check" :onClick="checkTask" />
       <IconButton icon="delete_outline" />
     </div>
   </div>
@@ -35,7 +33,6 @@ export default defineComponent({
     isHoverOn: Boolean,
   },
   setup(props) {
-    console.log(props);
     const state = reactive({
       checked: props.item?.isDone,
       isHover: false,
@@ -86,7 +83,7 @@ export default defineComponent({
 }
 
 .message {
-  padding: 0 0rem;
+  padding: 0 0.8rem;
   transition: 0.5s;
   text-align: justify;
   width: 100%;
