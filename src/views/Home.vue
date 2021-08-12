@@ -1,11 +1,11 @@
 <template>
+  <nav class="topbar" v-bind:class="{ 'show-bottom-bar': state.showBottomBar }">
+    <ListHeader v-if="ISMOBILE" :title="state.title" />
+    <p v-if="!ISMOBILE">Minimalist</p>
+    <IconButton icon="settings" />
+  </nav>
   <div class="home">
-    <nav
-      class="header"
-      v-bind:class="{ 'show-bottom-bar': state.showBottomBar }"
-    >
-      <p>Minimalist</p>
-    </nav>
+    <ListHeader v-if="!ISMOBILE" :title="state.title" />
     <input
       class="input-box"
       type="text"
@@ -13,7 +13,14 @@
       @keyup.enter="onSubmit"
       placeholder="new task"
     />
-    <div class="list">
+
+    <div v-if="state.undoneTask.length <= 0 && state.doneTask.length <= 0">
+      This is the empty state
+    </div>
+    <div
+      class="list"
+      v-if="state.undoneTask.length > 0 || state.doneTask.length > 0"
+    >
       <ListItem
         v-for="item in state.undoneTask"
         v-bind:key="item.id"
@@ -30,11 +37,13 @@
 
 <script lang="ts">
 import ListItem from "@/components/ListItem.vue";
+import ListHeader from "@/components/ListHeader.vue";
 import { defineComponent, onMounted, reactive } from "vue";
 import Task from "@/Task";
+import IconButton from "@/components/IconButton.vue";
 
 export default defineComponent({
-  components: { ListItem },
+  components: { ListItem, IconButton, ListHeader },
   name: "Home",
   setup() {
     const state = reactive<{
@@ -42,11 +51,13 @@ export default defineComponent({
       showBottomBar: boolean;
       doneTask: Task[];
       undoneTask: Task[];
+      title: string;
     }>({
       newTask: "",
       showBottomBar: false,
       doneTask: [],
       undoneTask: [],
+      title: "This is the title",
     });
 
     onMounted(() => {
@@ -55,6 +66,8 @@ export default defineComponent({
         () => (state.showBottomBar = window.scrollY > 110)
       );
     });
+
+    const ISMOBILE = window.innerWidth < 428;
 
     const onSubmit = () => {
       if (state.newTask.trim().length > 0) {
@@ -83,12 +96,13 @@ export default defineComponent({
     return {
       onSubmit,
       state,
+      ISMOBILE,
     };
   },
 });
 </script>
 
-<style>
+<style scoped>
 .home {
   width: 40%;
   margin: auto;
@@ -105,10 +119,10 @@ export default defineComponent({
   border: none;
   width: 100%;
   border-bottom: 0.1rem solid black;
-  padding: 0.1rem;
   outline: none;
   padding: 0.5rem;
   transition: 0.5s;
+  margin-top: 2rem;
 }
 
 .input-box::placeholder {
@@ -119,12 +133,13 @@ export default defineComponent({
   padding-top: 1rem;
   width: 100%;
 }
-.header {
+.topbar {
   padding: 0.5rem 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   position: fixed;
   text-align: start;
   z-index: 2;
@@ -132,6 +147,15 @@ export default defineComponent({
   left: 0;
   top: 0;
   background-color: white;
+}
+
+.header {
+  height: fit-content;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .show-bottom-bar {
@@ -143,15 +167,14 @@ export default defineComponent({
     width: 100%;
     margin: auto;
     padding: 1rem;
-    padding-top: 8rem;
+    padding-top: 4rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     box-sizing: border-box;
   }
-
-  .header {
+  .topbar {
     padding: 0.5rem 1rem;
     box-sizing: border-box;
     display: flex;

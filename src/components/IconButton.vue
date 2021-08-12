@@ -19,12 +19,14 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .icon-button {
   margin: 0.2rem;
   padding: 0.2rem;
   border-radius: 50%;
   transition: 0.5s;
+  cursor: pointer;
+  user-select: none;
 }
 
 .icon-button:hover {
