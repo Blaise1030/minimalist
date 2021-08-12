@@ -15,8 +15,13 @@
     />
     <div class="list">
       <ListItem
-        v-for="(item, index) in state.message"
-        v-bind:key="index"
+        v-for="item in state.undoneTask"
+        v-bind:key="item.id"
+        :item="item"
+      />
+      <ListItem
+        v-for="item in state.doneTask"
+        v-bind:key="item.id"
         :item="item"
       />
     </div>
@@ -26,6 +31,8 @@
 <script lang="ts">
 import ListItem from "@/components/ListItem.vue";
 import { defineComponent, onMounted, reactive } from "vue";
+import Task from "@/Task";
+
 export default defineComponent({
   components: { ListItem },
   name: "Home",
@@ -33,14 +40,13 @@ export default defineComponent({
     const state = reactive<{
       newTask: string;
       showBottomBar: boolean;
-      message: string[];
+      doneTask: Task[];
+      undoneTask: Task[];
     }>({
       newTask: "",
       showBottomBar: false,
-      message: [
-        "Message Message Message Message Message Message Message Message Message Message Message Message",
-        "Message",
-      ],
+      doneTask: [],
+      undoneTask: [],
     });
 
     onMounted(() => {
@@ -51,8 +57,27 @@ export default defineComponent({
     });
 
     const onSubmit = () => {
-      console.log(state.newTask);
-      state.newTask = "";
+      if (state.newTask.trim().length > 0) {
+        state.undoneTask.push({
+          id: Date.now(),
+          message: state.newTask,
+          isDone: false,
+          priority: 0,
+        } as Task);
+        state.undoneTask = sortTasks(state.undoneTask);
+        console.log(state.undoneTask);
+        state.newTask = "";
+      }
+    };
+
+    const sortTasks = (taskArray: Task[]): Task[] => {
+      return taskArray.sort((a: Task, b: Task) => {
+        let aScore = 0;
+        let bScore = 0;
+        a.priority >= b.priority ? (aScore += 2) : (bScore += 2);
+        a.id >= b.id ? (aScore += 1) : (bScore += 1);
+        return aScore < bScore ? 1 : -1;
+      });
     };
 
     return {

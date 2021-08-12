@@ -4,3 +4,5 @@ type Task = {
   isDone: boolean;
   priority: number;
 };
+
+export default Task;

@@ -9,7 +9,7 @@
       v-bind:class="{ checked: state.checked, includePadding: state.isHover }"
       @click="onWrapperClick()"
     >
-      {{ item }}
+      {{ item.message }}
     </p>
 
     <div class="trailing" v-if="state.isHover">
@@ -30,13 +30,14 @@ export default defineComponent({
   name: "ListComponent",
   components: { IconButton },
   props: {
-    item: String,
+    item: Object,
     checked: Boolean,
     isHoverOn: Boolean,
   },
-  setup() {
+  setup(props) {
+    console.log(props);
     const state = reactive({
-      checked: false,
+      checked: props.item?.isDone,
       isHover: false,
     });
 
