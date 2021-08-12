@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
-import Home from "../views/List.vue";
+import List from "../views/List.vue";
 import Main from "../views/Main.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -9,9 +9,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Main,
   },
   {
-    path: "/home",
-    name: "Home",
-    component: Home,
+    path: "/list",
+    name: "list",
+    component: List,
   },
   {
     path: "/all",

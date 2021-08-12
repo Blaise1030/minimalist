@@ -80,7 +80,7 @@
 import ListItem from "@/components/ListItem.vue";
 import ListHeader from "@/components/ListHeader.vue";
 import { defineComponent, onMounted, reactive } from "vue";
-import Task from "@/Task";
+import { Task } from "@/models";
 import IconButton from "@/components/IconButton.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { ISMOBILE } from "@/constants";
