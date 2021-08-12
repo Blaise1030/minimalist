@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <IconButton icon="arrow_back" />
+    <IconButton icon="arrow_back" :onClick="onBackClicked" />
     <span style="width: 1rem"></span>
     <h2>{{ title }}</h2>
   </div>
@@ -9,6 +9,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import IconButton from "@/components/IconButton.vue";
+import router from "@/router";
 
 export default defineComponent({
   name: "ListHeader",
@@ -17,7 +18,8 @@ export default defineComponent({
     title: String,
   },
   setup() {
-    return {};
+    const onBackClicked = () => router.back();
+    return { onBackClicked };
   },
 });
 </script>

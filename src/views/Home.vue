@@ -1,21 +1,23 @@
 <template>
   <nav class="topbar" v-bind:class="{ 'show-bottom-bar': state.showBottomBar }">
-    <ListHeader v-if="ISMOBILE" :title="state.title" />
-    <p v-if="!ISMOBILE">Minimalist</p>
+    <ListHeader :title="state.title" />
     <IconButton icon="settings" />
   </nav>
   <div class="home">
-    <ListHeader v-if="!ISMOBILE" :title="state.title" />
     <input
       class="input-box"
       type="text"
       v-model="state.newTask"
       @keyup.enter="onSubmit"
-      placeholder="new task"
+      placeholder="add a new task"
     />
 
-    <div v-if="state.undoneTask.length <= 0 && state.doneTask.length <= 0">
-      This is the empty state
+    <div
+      class="empty-state"
+      v-if="state.undoneTask.length <= 0 && state.doneTask.length <= 0"
+    >
+      <img src="../assets/empty-state.svg" alt="Empty State" />
+      <h4>Add something to your list :)</h4>
     </div>
     <div
       class="list"
@@ -41,6 +43,7 @@ import ListHeader from "@/components/ListHeader.vue";
 import { defineComponent, onMounted, reactive } from "vue";
 import Task from "@/Task";
 import IconButton from "@/components/IconButton.vue";
+import "../assets/empty-state.svg";
 
 export default defineComponent({
   components: { ListItem, IconButton, ListHeader },
@@ -133,6 +136,7 @@ export default defineComponent({
   padding-top: 1rem;
   width: 100%;
 }
+
 .topbar {
   padding: 0.5rem 1rem;
   box-sizing: border-box;
@@ -158,6 +162,11 @@ export default defineComponent({
   justify-content: flex-start;
 }
 
+.empty-state {
+  margin-top: 50%;
+  transform: translateY(-50%);
+}
+
 .show-bottom-bar {
   border-bottom: 1px solid #bbbbbb;
 }
@@ -165,15 +174,21 @@ export default defineComponent({
 @media (max-width: 428px) {
   .home {
     width: 100%;
+    height: 100%;
     margin: auto;
     padding: 1rem;
     padding-top: 4rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     box-sizing: border-box;
   }
+
+  .empty-state {
+    margin: auto;
+  }
+
   .topbar {
     padding: 0.5rem 1rem;
     box-sizing: border-box;
