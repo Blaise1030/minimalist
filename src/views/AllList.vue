@@ -14,7 +14,9 @@
       "
     />
 
-    <div class="list">
+    <EmptyState v-if="state.lists.length <= 0" label="Create a list !" />
+
+    <div class="list" v-if="state.lists.length > 0">
       <div
         class="list-tile"
         v-for="(element, index) in state.lists"
@@ -28,21 +30,34 @@
 </template>
 
 <script lang="ts">
+import EmptyState from "@/components/EmptyState.vue";
 import IconButton from "@/components/IconButton.vue";
 import router from "@/router";
-import { defineComponent, reactive } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 
 export default defineComponent({
-  components: { IconButton },
+  components: { IconButton, EmptyState },
   name: "AllList",
   setup() {
     const currentDate = new Date()
       .toISOString()
       .slice(0, 10)
       .replace(/-/g, "-");
-    const state = reactive<{ newList: string; lists: string[] }>({
+    const state = reactive<{
+      newList: string;
+      lists: string[];
+      showBottomBar: boolean;
+    }>({
       newList: "",
       lists: [],
+      showBottomBar: false,
+    });
+
+    onMounted(() => {
+      window.addEventListener(
+        "scroll",
+        () => (state.showBottomBar = window.scrollY > 110)
+      );
     });
 
     const onSubmit = () => {
@@ -92,6 +107,7 @@ export default defineComponent({
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin-bottom: 2rem;
 }
 
 .list-tile {

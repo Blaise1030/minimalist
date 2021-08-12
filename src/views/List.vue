@@ -171,6 +171,7 @@ export default defineComponent({
 .list {
   padding-top: 1rem;
   width: 100%;
+  margin-bottom: 2rem;
 }
 
 .topbar {
