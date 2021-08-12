@@ -87,7 +87,7 @@ import { ISMOBILE } from "@/constants";
 
 export default defineComponent({
   components: { ListItem, IconButton, ListHeader, EmptyState },
-  name: "Home",
+  name: "List",
   setup() {
     const state = reactive<{
       newTask: string;

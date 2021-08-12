@@ -21,7 +21,7 @@ export default defineComponent({
       showError: false,
     });
     const onSubmit = () => {
-      router.push("/home");
+      router.push("/all");
     };
     return { onSubmit, state };
   },
