@@ -95,9 +95,9 @@ export default defineComponent({
     const state = reactive<{
       newTask: string;
       showBottomBar: boolean;
-      doneTask: Task[];
-      undoneTask: Task[];
-      cachedTasks: Task[];
+      doneTask: any[];
+      undoneTask: any[];
+      cachedTasks: any[];
       title: string;
       showStats: boolean;
       creationDate: string;
@@ -113,30 +113,45 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.dispatch("userToDoListeners");
+      todosEvaluater();
       window.addEventListener(
         "scroll",
         () => (state.showBottomBar = window.scrollY > 110)
       );
     });
 
-    const onSubmit = () => {
-      console.log(store.getters.getUser());
+    const onSubmit = async () => {
       if (state.newTask.trim().length > 0) {
-        state.undoneTask.push({
-          id: Date.now(),
-          message: state.newTask,
-          listId: "1",
-          userId: "2",
-          isDone: false,
-          isDeleted: false,
-        } as Task);
-        state.undoneTask = sortTasks(state.undoneTask);
+        const message = state.newTask;
         state.newTask = "";
+        await store.dispatch("userCreatesTask", {
+          userTask: {
+            listId: "0",
+            id: Date.now(),
+            message,
+            userId: store.getters.getUser().uid,
+            isDone: false,
+            isDeleted: false,
+          } as Task,
+        });
+        todosEvaluater();
       }
+      state.newTask = "";
     };
 
     const logout = () => store.dispatch("signUserOut");
+
+    const todosEvaluater = () => {
+      state.doneTask = sortTasks(
+        (store.state.todos || []).filter((t: Task) => t.isDone && !t.isDeleted)
+      );
+      state.undoneTask = sortTasks(
+        (store.state.todos || []).filter((t: Task) => !t.isDone && !t.isDeleted)
+      );
+      state.cachedTasks = sortTasks(
+        (store.state.todos || []).filter((t: Task) => t.isDeleted)
+      );
+    };
 
     const sortTasks = (taskArray: Task[]): Task[] =>
       taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));

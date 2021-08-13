@@ -40,7 +40,7 @@ export const loginStateListener = ({
       user ? onUserIsSignIn(user) : onUserNotSignedIn()
     );
 export const logout = () => firebase.auth().signOut();
-export const getAllUserTasks = ({
+export const getAllUserTasks = async ({
   userId,
   listId,
   onSnapShot,
@@ -54,11 +54,30 @@ export const getAllUserTasks = ({
     .collection(TASK_COLLECTION)
     .where("userId", "==", userId)
     .where("listId", "==", listId)
-    .onSnapshot((docSnap) => onSnapShot(docSnap.docs));
+    .onSnapshot((docSnap) => {
+      onSnapShot(docSnap.docs.map((e) => e.data()));
+    });
 };
 
-export const addUserTask = ({userTask}: {userTask: Task}) => {
-  firebase
+export const getUserTasks = async ({
+  userId,
+  listId,
+}: {
+  userId: string;
+  listId: string;
+}) => {
+  const querySnapshot = await firebase
+    .firestore()
+    .collection(TASK_COLLECTION)
+    .where("userId", "==", userId)
+    .where("listId", "==", listId)
+    .get();
+
+  return querySnapshot.docs.map((d) => d.data());
+};
+
+export const addUserTask = async ({userTask}: {userTask: Task}) => {
+  await firebase
     .firestore()
     .collection(TASK_COLLECTION)
     .doc(`${userTask.id}${userTask.userId}`)

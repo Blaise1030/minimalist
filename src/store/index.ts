@@ -1,5 +1,7 @@
 import {
+  addUserTask,
   getAllUserTasks,
+  getUserTasks,
   loginStateListener,
   logout,
   signIn,
@@ -11,7 +13,7 @@ import {createStore} from "vuex";
 export default createStore({
   state: {
     user: null,
-    todos: [],
+    todos: null,
   },
   mutations: {
     setUser(state, newUser) {
@@ -23,8 +25,10 @@ export default createStore({
   },
   getters: {
     getUser: (state) => () => state.user,
+    getTasks: (state) => () => state.todos,
   },
   actions: {
+    userCreatesTask: (_, {userTask}) => addUserTask({userTask}),
     userTaskCheckOrUncheck: ({state}, {isCheck, taskId}) => {
       userTaskCheckOrUncheck({
         taskId,
@@ -33,21 +37,29 @@ export default createStore({
       });
     },
     // Gets all the user to do tasks
-    userToDoListeners: ({commit, state}) => {
+    userToDoListeners: async ({commit, state}) => {
       getAllUserTasks({
         userId: (state?.user || {uid: ""}).uid,
         listId: "0",
         onSnapShot: (data) => {
           commit("setTasks", data);
+          console.log(data);
+          if (router.currentRoute.value.name === "Main") {
+            router.push("/list");
+          }
         },
       });
     },
     // Listens to sign in state
-    userStateListener: ({commit}) => {
+    userStateListener: ({commit, dispatch, state}) => {
       loginStateListener({
-        onUserIsSignIn: (userCredentials) => {
+        onUserIsSignIn: async (userCredentials) => {
           commit("setUser", userCredentials);
-          router.push("/list");
+          dispatch("userToDoListeners");
+          commit(
+            "setTasks",
+            await getUserTasks({userId: userCredentials?.uid, listId: "0"})
+          );
         },
         onUserNotSignedIn: () => {
           commit("setUser", null);
