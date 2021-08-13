@@ -9,21 +9,16 @@
 </template>
 
 <script lang="ts">
-import router from "@/router";
-import { defineComponent, reactive } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 import Button from "@/components/Button.vue";
+import store from "@/store";
 export default defineComponent({
   name: "Main",
   components: { Button },
   setup() {
-    const state = reactive({
-      userName: "",
-      showError: false,
-    });
-    const onSubmit = () => {
-      router.push("/all");
-    };
-    return { onSubmit, state };
+    onMounted(() => store.dispatch("userStateListener"));
+    const onSubmit = () => store.dispatch("signUserIn");
+    return { onSubmit };
   },
 });
 </script>

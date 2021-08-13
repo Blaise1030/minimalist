@@ -1,10 +1,13 @@
 <template>
   <nav class="topbar" v-bind:class="{ 'show-bottom-bar': state.showBottomBar }">
-    <ListHeader :title="state.title" />
-    <IconButton
-      :icon="state.showStats ? 'checklist' : 'pie_chart'"
-      :onClick="() => (state.showStats = !state.showStats)"
-    />
+    <h4>{{ new Date().toISOString().slice(0, 10).replace(/-/g, " ") }}</h4>
+    <div>
+      <IconButton v-if="state.showStats" icon="logout" :onClick="logout" />
+      <IconButton
+        :icon="state.showStats ? 'checklist' : 'pie_chart'"
+        :onClick="() => (state.showStats = !state.showStats)"
+      />
+    </div>
   </nav>
   <div class="main" v-if="!state.showStats">
     <input
@@ -41,8 +44,8 @@
 
   <div class="main" v-if="state.showStats">
     <span class="counter">
-      List Created on
       <p>{{ state.creationDate }}</p>
+      Task Done
     </span>
     <div class="counter-group">
       <span class="counter"
@@ -78,15 +81,15 @@
 
 <script lang="ts">
 import ListItem from "@/components/ListItem.vue";
-import ListHeader from "@/components/ListHeader.vue";
 import { defineComponent, onMounted, reactive } from "vue";
 import { Task } from "@/models";
 import IconButton from "@/components/IconButton.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { ISMOBILE } from "@/constants";
+import store from "@/store";
 
 export default defineComponent({
-  components: { ListItem, IconButton, ListHeader, EmptyState },
+  components: { ListItem, IconButton, EmptyState },
   name: "List",
   setup() {
     const state = reactive<{
@@ -106,7 +109,7 @@ export default defineComponent({
       cachedTasks: [],
       title: "This is the title",
       showStats: false,
-      creationDate: "2018-10-30",
+      creationDate: "70%",
     });
 
     onMounted(() => {
@@ -121,6 +124,8 @@ export default defineComponent({
         state.undoneTask.push({
           id: Date.now(),
           message: state.newTask,
+          listId: "1",
+          userId: "2",
           isDone: false,
           priority: 0,
         } as Task);
@@ -129,6 +134,8 @@ export default defineComponent({
       }
     };
 
+    const logout = () => store.dispatch("signUserOut");
+
     const sortTasks = (taskArray: Task[]): Task[] =>
       taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));
 
@@ -136,6 +143,7 @@ export default defineComponent({
       onSubmit,
       state,
       ISMOBILE,
+      logout,
     };
   },
 });

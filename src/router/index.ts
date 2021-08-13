@@ -1,3 +1,4 @@
+import store from "@/store";
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
@@ -11,12 +12,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "list",
     component: () => import(/* webpackChunkName: "list" */ "../views/List.vue"),
   },
-  {
-    path: "/all",
-    name: "AllList",
-    component: () =>
-      import(/* webpackChunkName: "AllList" */ "../views/AllList.vue"),
-  },
 ];
 
 const router = createRouter({
@@ -25,19 +20,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _, next) => {
-  if (to.fullPath === "/all") {
-    if (Math.random() > 0.5) {
-      next("/");
-    }
-  }
   if (to.fullPath === "/list") {
-    if (Math.random() > 0.5) {
-      next("/");
+    if (!store.getters.getUser()) {
+      return next("/");
     }
   }
   if (to.fullPath === "/") {
-    if (Math.random() > 0.5) {
-      next("/all");
+    if (store.getters.getUser()) {
+      return next("/list");
     }
   }
   next();
