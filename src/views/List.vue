@@ -101,9 +101,9 @@ export default defineComponent({
       title: string;
       showStats: boolean;
       percentDone: string;
-      undoneTask: any;
-      doneTask: any;
-      cachedTask: any;
+      undoneTask: any[];
+      doneTask: any[];
+      cachedTask: any[];
     }>({
       newTask: "",
       showBottomBar: false,
