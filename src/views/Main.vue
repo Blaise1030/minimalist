@@ -3,22 +3,32 @@
     <div class="center">
       <h1 class="label">Minimalist</h1>
       <p class="label"><span>📝</span>a minimal list for minimalists</p>
-      <Button label="Get Started" :onClick="onSubmit" />
+      <Button
+        label="Get Started"
+        :isLoading="state.isLoading"
+        :onClick="onSubmit"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 import Button from "@/components/Button.vue";
 import store from "@/store";
 export default defineComponent({
   name: "Main",
   components: { Button },
   setup() {
+    const state = reactive({
+      isLoading: false,
+    });
     onMounted(() => store.dispatch("userStateListener"));
-    const onSubmit = () => store.dispatch("signUserIn");
-    return { onSubmit };
+    const onSubmit = () => {
+      store.dispatch("signUserIn");
+      state.isLoading = true;
+    };
+    return { onSubmit, state };
   },
 });
 </script>
