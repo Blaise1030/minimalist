@@ -1,7 +1,6 @@
 import {
   addUserTask,
   getAllUserTasks,
-  getUserTasks,
   loginStateListener,
   logout,
   signIn,
@@ -14,6 +13,7 @@ import {createStore} from "vuex";
 
 export default createStore({
   state: {
+    firebaseIsSetup: false,
     user: null,
     todos: [],
     checkedTodos: [],
@@ -40,6 +40,23 @@ export default createStore({
     getCachedTask: (state) => () => state.cachedTodos,
   },
   actions: {
+    segregateTasks: ({commit}, {data}) => {
+      const sortTasks = (taskArray: Task[]): Task[] =>
+        taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));
+
+      const doneTask = sortTasks(
+        (data || []).filter((t: Task) => t.isDone && !t.isDeleted)
+      );
+      const undoneTask = sortTasks(
+        (data || []).filter((t: Task) => !t.isDone && !t.isDeleted)
+      );
+      const cachedTasks = sortTasks(
+        (data || []).filter((t: Task) => t.isDeleted)
+      );
+      commit("setTasks", undoneTask);
+      commit("setCheckedTask", doneTask);
+      commit("setCachedTask", cachedTasks);
+    },
     userCreatesTask: (_, {userTask}) => addUserTask({userTask}),
     userCacheTask: (_, {taskId, userId}) =>
       userTaskDelete({
@@ -54,64 +71,28 @@ export default createStore({
       });
     },
     // Gets all the user to do tasks
-    userToDoListeners: async ({commit, state}) => {
+    userToDoListeners: async ({state, dispatch}) => {
       getAllUserTasks({
         userId: (state?.user || {uid: ""}).uid,
         listId: "0",
         onSnapShot: (data) => {
-          const sortTasks = (taskArray: Task[]): Task[] =>
-            taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));
-
-          const doneTask = sortTasks(
-            (data || []).filter((t: Task) => t.isDone && !t.isDeleted)
-          );
-          const undoneTask = sortTasks(
-            (data || []).filter((t: Task) => !t.isDone && !t.isDeleted)
-          );
-          const cachedTasks = sortTasks(
-            (data || []).filter((t: Task) => t.isDeleted)
-          );
-
-          commit("setTasks", undoneTask);
-          commit("setCheckedTask", doneTask);
-          commit("setCachedTask", cachedTasks);
+          dispatch("segregateTasks", {data});
           if (router.currentRoute.value.name === "Main") {
             router.push("/list");
           }
         },
       });
     },
-    addUserState: async ({state, commit}) => {
-      const data = (await getUserTasks({
-        userId: (state.user || {uid: ""}).uid,
-        listId: "0",
-      })) as Task[];
-
-      const sortTasks = (taskArray: Task[]): Task[] =>
-        taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));
-
-      const doneTask = sortTasks(
-        (data || []).filter((t: Task) => t.isDone && !t.isDeleted)
-      );
-      const undoneTask = sortTasks(
-        (data || []).filter((t: Task) => !t.isDone && !t.isDeleted)
-      );
-      const cachedTasks = sortTasks(
-        (data || []).filter((t: Task) => t.isDeleted)
-      );
-
-      commit("setTasks", undoneTask);
-      commit("setCheckedTask", doneTask);
-      commit("setCachedTask", cachedTasks);
-    },
     // Listens to sign in state
     userStateListener: ({commit, dispatch, state}) => {
       loginStateListener({
         onUserIsSignIn: async (userCredentials) => {
+          state.firebaseIsSetup = true;
           commit("setUser", userCredentials);
           dispatch("userToDoListeners");
         },
         onUserNotSignedIn: () => {
+          state.firebaseIsSetup = true;
           commit("setUser", null);
           router.push("/");
         },

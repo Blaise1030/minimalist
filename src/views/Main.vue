@@ -5,7 +5,7 @@
       <p class="label"><span>📝</span>a minimal list for minimalists</p>
       <Button
         label="Get Started"
-        :isLoading="state.isLoading"
+        :isLoading="state.isLoading || !state.firebaseIsSetup"
         :onClick="onSubmit"
       />
     </div>
@@ -22,8 +22,14 @@ export default defineComponent({
   setup() {
     const state = reactive({
       isLoading: false,
+      firebaseIsSetup: false,
     });
-    onMounted(() => store.dispatch("userStateListener"));
+    onMounted(() => {
+      store.dispatch("userStateListener");
+      store.subscribe((_, store) => {
+        state.firebaseIsSetup = store.firebaseIsSetup;
+      });
+    });
     const onSubmit = () => {
       store.dispatch("signUserIn");
       state.isLoading = true;
