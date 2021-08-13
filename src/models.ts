@@ -4,4 +4,5 @@ export type Task = {
   listId: string;
   message: string;
   isDone: boolean;
+  isDeleted: boolean;
 };

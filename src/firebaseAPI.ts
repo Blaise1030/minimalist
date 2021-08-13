@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import {Task} from "./models";
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
   authDomain: process.env.VUE_APP_AUTH_DOMAIN,
@@ -12,6 +13,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+const TASK_COLLECTION = "collection";
+
 export const signIn = (onSignInSuccess: (userCredentials: any) => void) => {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -23,8 +26,6 @@ export const signIn = (onSignInSuccess: (userCredentials: any) => void) => {
       console.log(err);
     });
 };
-
-export const logout = async () => await firebase.auth().signOut();
 
 export const loginStateListener = ({
   onUserIsSignIn,
@@ -38,5 +39,62 @@ export const loginStateListener = ({
     .onAuthStateChanged((user) =>
       user ? onUserIsSignIn(user) : onUserNotSignedIn()
     );
+export const logout = () => firebase.auth().signOut();
+export const getAllUserTasks = ({
+  userId,
+  listId,
+  onSnapShot,
+}: {
+  userId: string;
+  listId: string;
+  onSnapShot: (data: any[]) => void;
+}) => {
+  firebase
+    .firestore()
+    .collection(TASK_COLLECTION)
+    .where("userId", "==", userId)
+    .where("listId", "==", listId)
+    .onSnapshot((docSnap) => onSnapShot(docSnap.docs));
+};
 
-//store.commit("setUser", result.user);
+export const addUserTask = ({userTask}: {userTask: Task}) => {
+  firebase
+    .firestore()
+    .collection(TASK_COLLECTION)
+    .doc(`${userTask.id}${userTask.userId}`)
+    .set(userTask);
+};
+
+export const userTaskCheckOrUncheck = ({
+  taskId,
+  userId,
+  isDone = false,
+}: {
+  taskId: string;
+  userId: string;
+  isDone: boolean;
+}) => {
+  firebase
+    .firestore()
+    .collection(TASK_COLLECTION)
+    .doc(`${taskId}${userId}`)
+    .update({
+      isDone,
+    });
+};
+
+export const userTaskDelete = ({
+  taskId,
+  userId,
+}: {
+  taskId: string;
+  userId: string;
+}) => {
+  firebase
+    .firestore()
+    .collection(TASK_COLLECTION)
+    .doc(`${taskId}${userId}`)
+    .update({
+      isDeleted: true,
+    });
+};

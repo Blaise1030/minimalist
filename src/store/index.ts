@@ -1,4 +1,10 @@
-import {loginStateListener, logout, signIn} from "@/firebaseAPI";
+import {
+  getAllUserTasks,
+  loginStateListener,
+  logout,
+  signIn,
+  userTaskCheckOrUncheck,
+} from "@/firebaseAPI";
 import router from "@/router";
 import {createStore} from "vuex";
 
@@ -11,12 +17,31 @@ export default createStore({
     setUser(state, newUser) {
       state.user = newUser;
     },
+    setTasks(state, taskSnapshotList) {
+      state.todos = taskSnapshotList;
+    },
   },
   getters: {
     getUser: (state) => () => state.user,
   },
-  modules: {},
   actions: {
+    userTaskCheckOrUncheck: ({state}, {isCheck, taskId}) => {
+      userTaskCheckOrUncheck({
+        taskId,
+        userId: (state?.user || {uid: ""}).uid,
+        isDone: isCheck,
+      });
+    },
+    // Gets all the user to do tasks
+    userToDoListeners: ({commit, state}) => {
+      getAllUserTasks({
+        userId: (state?.user || {uid: ""}).uid,
+        listId: "0",
+        onSnapShot: (data) => {
+          commit("setTasks", data);
+        },
+      });
+    },
     // Listens to sign in state
     userStateListener: ({commit}) => {
       loginStateListener({
@@ -36,9 +61,10 @@ export default createStore({
         commit("setUser", userCredentials);
       });
     },
-    signUserOut: async ({commit}) => {
-      await logout();
-      commit("setUser", null);
+    signUserOut: () => {
+      logout();
+      router.push("/");
     },
   },
+  modules: {},
 });

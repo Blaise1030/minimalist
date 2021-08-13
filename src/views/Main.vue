@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from "vue";
+import { defineComponent, onMounted } from "vue";
 import Button from "@/components/Button.vue";
 import store from "@/store";
 export default defineComponent({

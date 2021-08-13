@@ -113,6 +113,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      store.dispatch("userToDoListeners");
       window.addEventListener(
         "scroll",
         () => (state.showBottomBar = window.scrollY > 110)
@@ -120,6 +121,7 @@ export default defineComponent({
     });
 
     const onSubmit = () => {
+      console.log(store.getters.getUser());
       if (state.newTask.trim().length > 0) {
         state.undoneTask.push({
           id: Date.now(),
@@ -127,7 +129,7 @@ export default defineComponent({
           listId: "1",
           userId: "2",
           isDone: false,
-          priority: 0,
+          isDeleted: false,
         } as Task);
         state.undoneTask = sortTasks(state.undoneTask);
         state.newTask = "";
