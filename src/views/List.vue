@@ -32,11 +32,13 @@
       <ListItem
         v-for="item in state.undoneTask"
         v-bind:key="item.id"
+        :canEdit="true"
         :item="item"
       />
       <ListItem
         v-for="item in state.doneTask"
         v-bind:key="item.id"
+        :canEdit="true"
         :item="item"
       />
     </div>
@@ -44,7 +46,7 @@
 
   <div class="main" v-if="state.showStats">
     <span class="counter">
-      <p>{{ state.creationDate }}</p>
+      <p>{{ state.percentDone }}</p>
       Task Done
     </span>
     <div class="counter-group">
@@ -62,17 +64,18 @@
     </div>
 
     <EmptyState
-      v-if="state.cachedTasks.length <= 0 && state.cachedTasks.length <= 0"
+      v-if="state.cachedTask.length <= 0 && state.cachedTask.length <= 0"
       label="No deleted tasks"
     />
 
     <div
       class="list"
-      v-if="state.cachedTasks.length > 0 || state.cachedTasks.length > 0"
+      v-if="state.cachedTask.length > 0 || state.cachedTask.length > 0"
     >
       <ListItem
-        v-for="item in state.cachedTasks"
+        v-for="item in state.cachedTask"
         v-bind:key="item.id"
+        :canEdit="false"
         :item="item"
       />
     </div>
@@ -95,25 +98,37 @@ export default defineComponent({
     const state = reactive<{
       newTask: string;
       showBottomBar: boolean;
-      doneTask: any[];
-      undoneTask: any[];
-      cachedTasks: any[];
       title: string;
       showStats: boolean;
-      creationDate: string;
+      percentDone: string;
+      undoneTask: any;
+      doneTask: any;
+      cachedTask: any;
     }>({
       newTask: "",
       showBottomBar: false,
-      doneTask: [],
-      undoneTask: [],
-      cachedTasks: [],
       title: "This is the title",
       showStats: false,
-      creationDate: "70%",
+      percentDone: "0%",
+      undoneTask: [],
+      doneTask: [],
+      cachedTask: [],
     });
 
     onMounted(() => {
-      todosEvaluater();
+      store.dispatch("userToDoListeners");
+      store.subscribe((_, store) => {
+        state.doneTask = store.checkedTodos;
+        state.cachedTask = store.cachedTodos;
+        state.undoneTask = store.todos;
+        state.percentDone = `${(state.doneTask.length +
+          state.undoneTask.length ===
+        0
+          ? 0
+          : (state.doneTask.length * 100) /
+            (state.doneTask.length + state.undoneTask.length)
+        ).toFixed()}%`;
+      });
       window.addEventListener(
         "scroll",
         () => (state.showBottomBar = window.scrollY > 110)
@@ -134,27 +149,11 @@ export default defineComponent({
             isDeleted: false,
           } as Task,
         });
-        todosEvaluater();
       }
       state.newTask = "";
     };
 
     const logout = () => store.dispatch("signUserOut");
-
-    const todosEvaluater = () => {
-      state.doneTask = sortTasks(
-        (store.state.todos || []).filter((t: Task) => t.isDone && !t.isDeleted)
-      );
-      state.undoneTask = sortTasks(
-        (store.state.todos || []).filter((t: Task) => !t.isDone && !t.isDeleted)
-      );
-      state.cachedTasks = sortTasks(
-        (store.state.todos || []).filter((t: Task) => t.isDeleted)
-      );
-    };
-
-    const sortTasks = (taskArray: Task[]): Task[] =>
-      taskArray.sort((a: Task, b: Task) => (a.id < b.id ? 1 : -1));
 
     return {
       onSubmit,

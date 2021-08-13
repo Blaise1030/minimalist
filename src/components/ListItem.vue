@@ -15,12 +15,13 @@
     </p>
 
     <div class="trailing" v-if="state.isHover">
-      <IconButton icon="delete_outline" />
+      <IconButton icon="delete_outline" :onClick="cacheTask" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import store from "@/store";
 import { defineComponent, reactive } from "vue";
 import IconButton from "./IconButton.vue";
 
@@ -31,6 +32,7 @@ export default defineComponent({
     item: Object,
     checked: Boolean,
     isHoverOn: Boolean,
+    canEdit: Boolean,
   },
   setup(props) {
     const state = reactive({
@@ -40,16 +42,36 @@ export default defineComponent({
 
     const ISMOBILE = window.innerWidth < 428;
 
-    const checkTask = () => (state.checked = !state.checked);
+    const cacheTask = () => {
+      if (props.canEdit) {
+        store.dispatch("userCacheTask", {
+          taskId: (props.item || { id: "" }).id,
+          userId: store.getters.getUser().uid,
+        });
+      }
+    };
+
+    const checkTask = () => {
+      if (props.canEdit) {
+        state.checked = !state.checked;
+        store.dispatch("userTaskCheckOrUncheck", {
+          isCheck: state.checked,
+          taskId: (props.item || { id: "" }).id,
+        });
+      }
+    };
 
     const onWrapperClick = () => {
-      state.isHover = !state.isHover;
+      if (props.canEdit) {
+        state.isHover = !state.isHover;
+      }
     };
 
     return {
       checkTask,
       state,
       onWrapperClick,
+      cacheTask,
       ISMOBILE,
     };
   },
