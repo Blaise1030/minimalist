@@ -22,7 +22,7 @@ export default defineComponent({
 <style scoped>
 .icon-button {
   margin: 0.2rem;
-  padding: 0.2rem;
+  padding: 0.5rem;
   border-radius: 50%;
   transition: 0.5s;
   cursor: pointer;

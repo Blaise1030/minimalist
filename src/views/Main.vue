@@ -49,7 +49,7 @@ export default defineComponent({
 
 @media (max-width: 428px) {
   .center {
-    width: 90%;
+    width: 70%;
     text-align: start;
   }
 }
